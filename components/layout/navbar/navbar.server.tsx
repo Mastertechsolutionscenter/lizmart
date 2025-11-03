@@ -1,6 +1,6 @@
 // components/layout/navbar/Navbar.server.tsx
 import Link from "next/link";
-import LogoSquare from "components/logo-square";
+import Image from "next/image";
 import type { Menu } from "@/lib/neondb/types";
 
 type NavbarProps = {
@@ -17,7 +17,7 @@ export function NavbarServer({ menu }: NavbarProps) {
       </div>
       <div className="flex w-full items-center">
         <Link href="/" prefetch>
-          <LogoSquare />
+          <Image src="/logo.png" alt="Lizmart Naturals Logo" width="40" height="40" />
           <div className="ml-2 text-sm font-medium uppercase md:hidden lg:block">
             {SITE_NAME}
           </div>

@@ -1,13 +1,13 @@
 "use client";
 
-import { Suspense } from "react";
-import { usePathname } from "next/navigation";
+import type { Menu } from "@/lib/neondb/types";
+import CartModal from "components/cart/modal"; // client component
+import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 import MobileMenu from "./mobile-menu"; // should be a client component
 import Search, { SearchSkeleton } from "./search"; // client component
-import CartModal from "components/cart/modal"; // client component
-import LogoSquare from "components/logo-square";
-import type { Menu } from "@/lib/neondb/types";
 
 type Props = {
   menu: Menu[];
@@ -36,7 +36,7 @@ export default function NavbarClient({ menu }: Props) {
             prefetch={true}
             className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
           >
-            <LogoSquare />
+            <Image src="/logo.png" alt="Lizmart Naturals Logo" width="40" height="40" />
             <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
               {SITE_NAME}
             </div>
