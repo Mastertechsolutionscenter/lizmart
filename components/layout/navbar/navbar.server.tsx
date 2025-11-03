@@ -1,0 +1,37 @@
+// components/layout/navbar/Navbar.server.tsx
+import Link from "next/link";
+import LogoSquare from "components/logo-square";
+import type { Menu } from "@/lib/neondb/types";
+
+type NavbarProps = {
+  menu: Menu[];
+};
+
+export function NavbarServer({ menu }: NavbarProps) {
+  const SITE_NAME = process.env.SITE_NAME || "";
+
+  return (
+    <nav className="relative flex items-center justify-between p-4 lg:px-6">
+      <div className="flex-none md:hidden">
+        {/* leave MobileMenu out here or supply via props */}
+      </div>
+      <div className="flex w-full items-center">
+        <Link href="/" prefetch>
+          <LogoSquare />
+          <div className="ml-2 text-sm font-medium uppercase md:hidden lg:block">
+            {SITE_NAME}
+          </div>
+        </Link>
+        <ul className="hidden gap-6 text-sm md:flex md:items-center">
+          {menu.map((item) => (
+            <li key={item.title}>
+              <Link href={item.path} prefetch>
+                {item.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+  );
+}

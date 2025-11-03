@@ -1,0 +1,169 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-hot-toast";
+
+import type { Cart } from "@/lib/neondb/types";
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+
+import AddressForm from "./AddressForm";   // adjust path if needed
+
+interface CartClientProps {
+  cart?: Cart;
+}
+
+export default function CartClient({ cart }: CartClientProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // State to track whether address form should be shown
+  const [showAddressForm, setShowAddressForm] = useState(false);
+
+  // Clear cart function placeholder
+  const removeAll = async () => {
+    // TODO: call your API or clear via context/prisma etc.
+    // e.g. await fetch("/api/cart/clear", { method: "POST" });
+    // Then maybe route to home or show something
+  };
+
+  // Check for success / canceled in URL params
+  useEffect(() => {
+    if (searchParams.get("success")) {
+      toast.success("Payment completed.");
+      removeAll();
+    }
+    if (searchParams.get("canceled")) {
+      toast.error("Something went wrong.");
+    }
+  }, [searchParams]);
+
+  if (!cart || cart.lines.length === 0) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-2xl font-bold">Your cart is empty</h2>
+        <Button onClick={() => router.push("/")}>Continue Shopping</Button>
+      </div>
+    );
+  }
+
+
+  // Handle address form submission
+  const handleAddressSubmit = async (data: {
+  fullName: string;
+  email?: string;
+  phone: string;
+  county: string;
+  town: string;
+  mpesaNumber: string;
+}) => {
+  try {
+    const cartId = cart?.id;
+    if (!cartId) {
+      toast.error("Cart ID missing");
+      return;
+    }
+
+    const response = await fetch(`/api/admin/checkout/cart/${cartId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const json = await response.json();
+
+    if (!response.ok || !json.success) {
+      toast.error(json.message || "Checkout failed.");
+      return;
+    }
+
+    // If redirectUrl present, navigate to it
+    if (json.redirectUrl) {
+      window.location.href = json.redirectUrl;
+      return;
+    }
+
+    // Else, maybe redirect to a success page or add success param
+    router.push(`/cart/[cartId]?success=true`);
+  } catch (err) {
+    console.error("Error in handleAddressSubmit:", err);
+    toast.error("Something went wrong during checkout.");
+  }
+};
+
+  return (
+    <div className="container mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Left: Cart lines review */}
+      <div className="space-y-6">
+        <h1 className="text-3xl font-semibold">Your Cart</h1>
+        {cart.lines.map((line, idx) => (
+          <Card key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4">
+            <CardContent className="flex-1 flex gap-4">
+              {line.merchandise.product.images?.[0] && (
+                <Image
+                  src={line.merchandise.product.images[0].url}
+                  alt={line.merchandise.product.title}
+                  width={100}
+                  height={100}
+                  className="rounded object-cover"
+                />
+              )}
+              <div className="flex-1 flex flex-col space-y-1">
+                <div className="font-medium text-lg">{line.merchandise.product.title}</div>
+                {line.merchandise.selectedOptions?.map((opt) => (
+                  <div key={opt.name} className="text-sm text-muted-foreground">
+                    {opt.name}: {opt.value}
+                  </div>
+                ))}
+                <div className="mt-2 text-sm text-muted-foreground">
+                  Quantity: {line.quantity}
+                </div>
+              </div>
+            </CardContent>
+            <div className="p-4 sm:ml-4 font-semibold text-lg">
+              {line.cost.totalAmount.amount} {line.cost.totalAmount.currencyCode}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Right: Summary + AddressForm or Pay Now */}
+      <div className="w-full max-w-md flex-shrink-0 space-y-8">
+        {/* If address form not shown yet, show summary + button to show it */}
+        {!showAddressForm ? (
+          <Card>
+            <CardHeader>
+              <h2 className="text-xl font-bold">Order Summary</h2>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>
+                  {cart.cost.subtotalAmount.amount} {cart.cost.subtotalAmount.currencyCode}
+                </span>
+              </div>
+              <div className="border-t pt-4 flex justify-between font-bold">
+                <span>Total</span>
+                <span>
+                  {cart.cost.totalAmount.amount} {cart.cost.totalAmount.currencyCode}
+                </span>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" onClick={() => setShowAddressForm(true)}>
+                Enter Address & Pay
+              </Button>
+            </CardFooter>
+          </Card>
+        ) : (
+          // Show the address form which includes Pay Now
+          <AddressForm cart={cart} onSubmit={handleAddressSubmit} />
+        )}
+      </div>
+    </div>
+  );
+}
