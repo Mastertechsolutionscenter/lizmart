@@ -263,7 +263,7 @@ export default function PromotionSection(): React.ReactElement {
                       alt={p4.imageAlt || ""}
                       width={256} 
                       height={256} 
-                      className="object-contain w-3/4 md:w-full md:h-full"
+                      className="object-contain w-3/4 h-full md:w-full md:h-full"
                     />
                   </div>
                 )}
