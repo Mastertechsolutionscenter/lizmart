@@ -11,7 +11,7 @@ export default async function CollectionPage({ params }: PageProps) {
  
    const { collectionId } = await params; 
  //
-  const collection = await prisma.collection.findUnique({
+ const collection = await prisma.collection.findUnique({
   where: { id: collectionId },
   include: {
     products: {
@@ -21,14 +21,24 @@ export default async function CollectionPage({ params }: PageProps) {
         },
       },
     },
+    parent: {
+      select: { id: true, title: true },
+    },
+    children: {
+      select: { id: true, title: true },
+    },
   },
+});
+
+const allCollections = await prisma.collection.findMany({
+  select: { id: true, title: true },
 });
 
 
   return (
     <div className="flex-col">
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <CollectionForm initialData={collection} />
+        <CollectionForm initialData={collection} allCollections={allCollections} />
       </div>
     </div>
   );

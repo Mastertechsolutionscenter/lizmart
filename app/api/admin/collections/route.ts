@@ -49,6 +49,7 @@ export async function POST(req: Request) {
         title: parsed.title,
         description: parsed.description,
         seoId: parsed.seoId,
+        parentId: parsed.parentId
       },
     });
 

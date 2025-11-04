@@ -6,6 +6,7 @@ export const createCollectionSchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   seoId: z.string().uuid().optional(),
+  parentId: z.string().optional().nullable(),
 });
 
 export const updateCollectionSchema = createCollectionSchema.partial();

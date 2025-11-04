@@ -67,7 +67,7 @@ export async function PATCH(
     const parsed = updateCollectionSchema.parse(body);
 
     const allowed: Record<string, any> = {};
-    ["handle", "title", "description", "seoId"].forEach((k) => {
+    ["handle", "title", "description", "seoId", "parentCollectionId"].forEach((k) => {
       if (Object.prototype.hasOwnProperty.call(parsed, k)) allowed[k] = (parsed as any)[k];
     });
 

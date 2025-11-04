@@ -42,9 +42,9 @@ model Product {
   descriptionHtml         String?
   availableForSale        Boolean             @default(true)
   options                 Json?
-  minVariantPriceAmount   Int?                @db.Integer // Changed to Int
+  minVariantPriceAmount   Int?                @db.Integer // unchanged
   minVariantPriceCurrency String?
-  maxVariantPriceAmount   Int?                @db.Integer // Changed to Int
+  maxVariantPriceAmount   Int?                @db.Integer // unchanged
   maxVariantPriceCurrency String?
   featuredImage           Image?              @relation("ProductFeaturedImage", fields: [imageId], references: [id])
   featuredImageId         String?
@@ -52,7 +52,7 @@ model Product {
   variants                ProductVariant[]
   seo                     SEO?                @relation(fields: [seoId], references: [id])
   seoId                   String?
-  tags                    String[]
+  tags                    String[]             // kept as string array per your schema
   updatedAt               DateTime?           @updatedAt
   createdAt               DateTime            @default(now())
   imageId                 String?
@@ -82,6 +82,7 @@ model ProductVariant {
   OrderItem        OrderItem[]
 }
 
+
 model Image {
   id         String    @id @default(uuid()) @unique
   url        String
@@ -101,11 +102,19 @@ model Collection {
   description String?
   seo         SEO?      @relation(fields: [seoId], references: [id])
   seoId       String?
+
+  // nesting (one-to-many self-relation)
+  parentId    String?
+  parent      Collection?   @relation("CollectionChildren", fields: [parentId], references: [id])
+  children    Collection[]  @relation("CollectionChildren")
+
   updatedAt   DateTime? @updatedAt
   createdAt   DateTime  @default(now())
 
-  // many-to-many with Product
+  // many-to-many with Product (join table: CollectionProduct)
   products CollectionProduct[]
+
+  @@index([parentId])
 }
 
 model CollectionProduct {

@@ -43,10 +43,11 @@ interface CollectionFormProps {
       product: Pick<Product, "id" | "title">;
     })[];
   }) | null;
+  allCollections: { id: string; title: string }[];
 }
 
 export const CollectionForm: React.FC<CollectionFormProps> = ({
-  initialData,
+  initialData, allCollections,
 }) => {
   const params = useParams();
   const router = useRouter();
@@ -69,12 +70,14 @@ export const CollectionForm: React.FC<CollectionFormProps> = ({
           title: initialData.title,
           description: initialData.description ?? "",
           seoId: initialData.seoId ?? undefined,
+          parentId: (initialData as any).parentId ?? null,
         }
       : {
           handle: "",
           title: "",
           description: "",
           seoId: undefined,
+          parentId: null,
         },
   });
 
@@ -167,6 +170,35 @@ export const CollectionForm: React.FC<CollectionFormProps> = ({
                 </FormItem>
               )}
             />
+            <FormField
+  control={form.control}
+  name="parentId"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Parent Collection</FormLabel>
+      <FormControl>
+        <select
+          disabled={loading}
+          value={field.value || ""}
+          onChange={(e) =>
+            field.onChange(e.target.value === "" ? null : e.target.value)
+          }
+          className="border border-input rounded-md px-3 py-2 w-full"
+        >
+          <option value="">No parent (Top-level)</option>
+          {allCollections
+            .filter((c) => !initialData || c.id !== initialData.id)
+            .map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title}
+              </option>
+            ))}
+        </select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
           </div>
 
           <FormField
