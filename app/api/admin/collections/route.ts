@@ -1,7 +1,7 @@
 // app/api/collections/route.ts
-import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { createCollectionSchema } from "@/schemas/collection";
+import { NextResponse } from "next/server";
 import { z } from "zod";
 
 export async function GET(req: Request) {
@@ -42,6 +42,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const parsed = createCollectionSchema.parse(body);
+    console.log("collection 2", parsed);
 
     const created = await prisma.collection.create({
       data: {

@@ -58,6 +58,8 @@ model Product {
   imageId                 String?
   CollectionProduct       CollectionProduct[]
 
+  gender                  String              @default("general")
+
   @@index([handle])
 }
 
@@ -110,6 +112,8 @@ model Collection {
 
   updatedAt   DateTime? @updatedAt
   createdAt   DateTime  @default(now())
+
+  gender      String     @default("general")
 
   // many-to-many with Product (join table: CollectionProduct)
   products CollectionProduct[]
