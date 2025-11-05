@@ -59,6 +59,7 @@ model Product {
   CollectionProduct       CollectionProduct[]
 
   gender                  String              @default("general")
+  featured                Boolean  @default(false)
 
   @@index([handle])
 }

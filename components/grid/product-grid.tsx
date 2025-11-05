@@ -30,7 +30,13 @@ export default function ProductGrid({
   totalPages?: number;
 }) {
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8">
+    <section className="mx-auto max-w-7xl px-4 py-8 mt-16 md:mt-24 mb-24">
+      <h1 className="text-5xl md:text-6xl font-extrabold text-[#1D7A39] mb-6">
+    Explore Our <span className="text-amber-400">Products</span> 
+  </h1>
+  <p className="text-mb md:text-lg text-[#135628]/75 max-w-3xl mb-9">
+    Discover a wide range of health, wellness, and natural solutions designed to elevate your lifestyle. From supplements and creams to herbal teas and specialized wellness products, we have something for everyone.
+  </p>
      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6 w-full max-w-none">
   {items.map((p) => {
     const imgSrc =
@@ -62,9 +68,9 @@ export default function ProductGrid({
     </Link>
 
     {/* Top-Left Badge */}
-    <div className="absolute top-3 left-3 bg-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+    {/* <div className="absolute top-3 left-3 bg-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
       Best Seller
-    </div>
+    </div> */}
 
     {/* Top-Right Wishlist Heart */}
     <button

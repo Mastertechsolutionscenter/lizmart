@@ -9,12 +9,12 @@ export type Product = {
   description?: string;
   price: number;
   currencyCode?: string;
-  images?: any[]; // refine per your Image type
+  images?: any[]; 
   featuredImage?: any;
   variants?: any[];
   seo?: any;
   createdAt?: Date;
-  // ...other fields you need in the UI
+  
 };
 
 export type GetProductsParams = {
