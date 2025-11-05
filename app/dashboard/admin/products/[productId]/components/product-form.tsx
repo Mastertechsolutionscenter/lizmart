@@ -75,6 +75,7 @@ const availableTags = [
   "Powders",
   "Granules",
   "Chewables",
+  "Gummies",
   "Oils",
   "Creams",
   "Gels",
