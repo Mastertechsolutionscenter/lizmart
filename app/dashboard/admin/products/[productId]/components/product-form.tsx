@@ -54,7 +54,7 @@ interface ProductFormProps {
           })
         | null;
 
-    collections: { id: string; title: string, gender: string, parentId: string }[];
+    collections: { id: string; title: string, gender: string }[];
 }
 
 export type VariantFormValues = {
