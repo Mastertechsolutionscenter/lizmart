@@ -41,7 +41,7 @@ const AppSidebar = () => {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link href="/dashboard/admin">
-                <Image src="/favicon.svg" alt="logo" width={20} height={20} />
+                <Image src="/logo.png" alt="logo" width={20} height={20} />
                 <span>LizMart Naturals</span>
               </Link>
             </SidebarMenuButton>

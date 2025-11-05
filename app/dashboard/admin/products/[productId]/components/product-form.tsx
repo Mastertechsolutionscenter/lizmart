@@ -54,7 +54,7 @@ interface ProductFormProps {
           })
         | null;
 
-    collections: { id: string; title: string, gender: string }[];
+    collections: { id: string; title: string, gender: string, parentId: string }[];
 }
 
 export type VariantFormValues = {
@@ -94,6 +94,7 @@ export function ProductVariantsFormWrapper({ initialVariants }: { initialVariant
 
 
 export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collections }) => {
+    
     const params = useParams();
     const router = useRouter();
 
@@ -221,6 +222,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
             setOpen(false);
         }
     };
+
+      
+
 
     return (
         <>
@@ -368,6 +372,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
   )}
 />
 
+
+
 <FormField
   control={form.control}
   name="gender"
@@ -383,8 +389,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
             <SelectValue>{field.value}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="male">Male</SelectItem>
-            <SelectItem value="female">Female</SelectItem>
+            <SelectItem value="men">Male</SelectItem>
+            <SelectItem value="women">Female</SelectItem>
             <SelectItem value="general">General</SelectItem>
           </SelectContent>
         </Select>
@@ -399,13 +405,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
   control={form.control}
   name="collectionIds"
   render={({ field }) => {
-    const selectedCollections =
-      collections.filter((c) => field.value?.includes(c.id)) ?? [];
-
-    // Filter available collections by the selected gender
     const gender = form.watch("gender") ?? "general";
+
+    // Only show collections matching the selected gender
     const filteredCollections = collections.filter(
       (c) => c.gender === gender
+    );
+
+    // Map selected collections based on current value and filtered list
+    const selectedCollections = filteredCollections.filter((c) =>
+      field.value?.includes(c.id)
     );
 
     return (
@@ -447,6 +456,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
     );
   }}
 />
+
 
                {/* Tags Multi-Select */}
 <FormField
