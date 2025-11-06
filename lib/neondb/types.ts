@@ -121,6 +121,9 @@ export type ShopifyCollection = {
   description: string;
   seo: SEO;
   updatedAt: string;
+  parentId: string;
+  gender: string;
+  id: string;
 };
 
 export type ShopifyProduct = {
