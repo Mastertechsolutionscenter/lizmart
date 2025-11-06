@@ -11,16 +11,28 @@ export async function generateMetadata(props: {
   params: Promise<{ collection: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const collection = await getCollection(params.collection);
+  const collectionHandle = params.collection;
 
-  if (!collection) return notFound();
+  // Fetch 1 product to determine metadata and whether the collection has products
+  const { items, total } = await getProductsByCollection({
+    collectionHandle,
+    page: 1,
+    perPage: 1,
+  });
+
+    
+
+  const first = items[0];
+
+  const title = first?.seo?.title || collectionHandle;
+  const description =
+    first?.seo?.description ||
+    first?.description ||
+    `${collectionHandle} products`;
 
   return {
-    title: collection.seo?.title || collection.title,
-    description:
-      collection.seo?.description ||
-      collection.description ||
-      `${collection.title} products`,
+    title,
+    description,
   };
 }
 
@@ -45,7 +57,7 @@ export default async function CategoryPage(props: {
     reverse,
     gender: genderSlug,
   });
-
+  
   return (
     <section>
       {items.length === 0 ? (
