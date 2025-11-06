@@ -1,6 +1,7 @@
 import FullCommerceNavbar from "@/components/layout/navbar/category-menu";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { getCart, getCollections, getMenu } from '@/lib/neondb';
+import { getCart, getMenu } from '@/lib/neondb';
+import { getCollections } from "@/actions/api/get-collections";
 import { CartProvider } from 'components/cart/cart-context';
 import NavbarClient from "components/layout/navbar/NavbarClient";
 import { WelcomeToast } from 'components/welcome-toast';

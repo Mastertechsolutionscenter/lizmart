@@ -1,132 +1,117 @@
-'use client';
+"use client";
 
-import { Collection } from '@/lib/neondb/types';
-import { ChevronDown, Menu, Phone, ShoppingBag, X } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import CategoriesDropdown from "./categories-dropdown";
 
-interface MenuLink {
+type NavCollection = {
+  id: string;
+  handle: string;
   title: string;
-  path: string;
-  hasChildren: boolean;
-  subLinks?: MenuLink[];
-}
+  parentId?: string | null;
+  gender?: string | null;
+  path?: string;
+  children?: NavCollection[];
+};
 
-const ABOUT_SUB_LINKS: MenuLink[] = [
-  { title: 'About Us', path: '/about-us', hasChildren: false },
-  
-];
+type TopMenuItem = {
+  title: string;
+  path?: string;
+  key?: string; // used to filter collections (e.g. 'men','women','sports','categories')
+  filterFn?: (c: NavCollection) => boolean; // optional override
+};
 
-const menu: MenuLink[] = [
-  { title: 'HOME', path: '/', hasChildren: false },
-  { title: 'ABOUT', path: '/about', hasChildren: true, subLinks: ABOUT_SUB_LINKS },
-  { title: 'SHOP', path: '/search', hasChildren: true },
-  { title: 'NEWS', path: '/news', hasChildren: true },
-  { title: 'CONTACT', path: '/contact-us', hasChildren: false },
-];
-
-const PHONE_NUMBER = '+254 727 717 019';
+const PHONE_NUMBER = "+254 727 717 019";
 
 /**
- * CategoryList: renders collections for mobile or desktop dropdown.
- * Desktop dropdown opening is controlled by parent via `openKey` / handlers.
+ * Edit/add top-level menu items here.
+ * - To add a new top tab (e.g. 'KIDNEY'), add an entry to TOP_MENU.
+ * - Use `key` for the component's default rules, or provide a `filterFn`.
  */
-function CategoryList({
-  collections,
-  isMobile,
-  openKey,
-  openId,
-  onOpen,
-  onClose,
-}: {
-  collections: Collection[];
-  isMobile: boolean;
-  openKey?: string | null;
-  openId?: string | null; // reserved for future use
-  onOpen?: (key: string) => void;
-  onClose?: () => void;
-}) {
-  const router = useRouter();
+const TOP_MENU: TopMenuItem[] = [
+  { title: "HOME", path: "/" },
+  { title: "CATEGORIES", path: "/search", key: "categories" }, // shows general
+  { title: "MEN", path: "/gender/men", key: "men" },
+  { title: "WOMEN", path: "/gender/women", key: "women" },
+  { title: "SPORTS", path: "/search/sports", key: "sports" },
+  { title: "SKIN CARE", path: "/search/skin-care", key: "skin" },
+  { title: "CONTACT", path: "/contact-us" },
+  { title: "ABOUT US", path: "/about-us"}
+];
 
-  const handleLinkClick = (handle: string) => router.push(`/search/${handle}`);
+/* ---------- helpers ---------- */
 
-  const LinksContent = (
-    <ul className="py-3">
-      {collections.map((collection) => (
-        <li key={collection.handle}>
-          <a
-            href={`/search/${collection.handle}`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleLinkClick(collection.handle);
-            }}
-            className={`flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition duration-150 ${
-              isMobile ? 'mx-0' : 'rounded-md mx-2 my-1'
-            }`}
-          >
-            <ShoppingBag className="w-4 h-4 mr-3 text-teal-600 flex-shrink-0" />
-            <span className="truncate">{collection.title}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
+// build a tree from flat collection list
+function buildTree(items: NavCollection[]) {
+  const map = new Map<string, NavCollection>();
+  items.forEach((it) => map.set(it.id, { ...it, children: [] }));
 
-  if (isMobile) {
-    return (
-      <div className="mt-4 border-t">
-        <div className="px-4 py-2 font-semibold text-gray-700 bg-gray-50 flex items-center">
-          <Menu className="w-5 h-5 mr-2" />
-          <span className="uppercase text-xs tracking-wide">Categories</span>
-        </div>
-        {LinksContent}
-      </div>
+  const roots: NavCollection[] = [];
+  map.forEach((node) => {
+    const pid = node.parentId ?? null;
+    if (pid && map.has(pid)) {
+      map.get(pid)!.children!.push(node);
+    } else {
+      roots.push(node);
+    }
+  });
+
+  return roots;
+}
+
+// get collections for a given top-menu key using simple rules (you can extend)
+function collectionsForKey(key: string | undefined, all: NavCollection[]): NavCollection[] {
+  if (!key || key === "categories") {
+    // CATEGORIES: only general
+    return all.filter((c) => (c.gender ?? "general") === "general");
+  }
+
+  if (key === "men") {
+    // MEN: only men
+    return all.filter((c) => (c.gender ?? "") === "men");
+  }
+
+  if (key === "women") {
+    // WOMEN: only women
+    return all.filter((c) => (c.gender ?? "") === "women");
+  }
+
+  if (key === "sports") {
+    // SPORTS: gender = sports or keyword in title/handle
+    return all.filter(
+      (c) =>
+        (c.gender ?? "") === "sports" ||
+        c.handle?.toLowerCase().includes("sport") ||
+        c.title?.toLowerCase().includes("sport")
     );
   }
 
-  // Desktop controlled dropdown: parent opens by key 'categories'
-  const isOpen = openKey === 'categories';
+  if (key === "skin") {
+    // SKIN CARE: keyword-based
+    return all.filter(
+      (c) => c.handle?.toLowerCase().includes("skin") || c.title?.toLowerCase().includes("skin")
+    );
+  }
 
-  return (
-    <div className="relative h-full" onMouseEnter={() => onOpen?.('categories')} onMouseLeave={() => onClose?.()}>
-      <button
-        aria-haspopup="true"
-        aria-expanded={isOpen}
-        className="flex items-center justify-between h-full px-4 py-2 text-white bg-teal-600 font-semibold text-sm tracking-wide rounded-md shadow-md focus:outline-none"
-      >
-        <div className="flex items-center">
-          <Menu className="w-4 h-4 mr-2" />
-          <span className="uppercase">Categories</span>
-        </div>
-        <ChevronDown className={`w-4 h-4 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-
-      <div
-        className={`absolute left-0 mt-2 z-40 w-80 bg-white border border-gray-200 shadow-lg rounded-md p-2 transform transition-all duration-200 origin-top-left ${
-          isOpen ? 'opacity-100 visible translate-y-0 pointer-events-auto' : 'opacity-0 invisible -translate-y-1 pointer-events-none'
-        }`}
-      >
-        {/* invisible bridge to prevent hover-gap flicker */}
-        <div className="absolute -top-2 left-0 right-0 h-2" />
-        <div className="grid grid-cols-1 gap-1 max-h-72 overflow-auto">{LinksContent}</div>
-      </div>
-    </div>
-  );
+  // fallback: general
+  return all.filter((c) => (c.gender ?? "general") === "general");
 }
 
-export default function FullCommerceNavbar({ collections }: { collections: Collection[] }) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+/* ---------- component ---------- */
+
+export default function FullCommerceNavbar({ collections }: { collections: NavCollection[] }) {
   const router = useRouter();
   const pathname = usePathname() ?? "";
-  
-  
   if (pathname.startsWith("/dashboard/admin")) return null;
 
-  // Dropdown controller (shared for all desktop dropdowns)
+  // dropdown controller
   const [openKey, setOpenKey] = useState<string | null>(null);
   const closeTimeout = useRef<number | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // clear timeout on unmount
   useEffect(() => {
     return () => {
       if (closeTimeout.current) window.clearTimeout(closeTimeout.current);
@@ -140,151 +125,166 @@ export default function FullCommerceNavbar({ collections }: { collections: Colle
     }
     setOpenKey(key);
   };
-
-  const closeDropdownWithDelay = (delay = 180) => {
+  const closeDropdownWithDelay = (delay = 200) => {
     if (closeTimeout.current) window.clearTimeout(closeTimeout.current);
     closeTimeout.current = window.setTimeout(() => setOpenKey(null), delay);
   };
 
-  const handleLinkClick = (path: string) => {
+  const handleLink = (path: string) => {
     router.push(path);
-    setIsDrawerOpen(false);
     setOpenKey(null);
+    setIsDrawerOpen(false);
   };
 
-  // --- Mobile Collapsible Submenu ---
-  const MobileSubmenuItem = ({ link }: { link: MenuLink }) => {
-    const [isMobileOpen, setIsMobileOpen] = useState(false);
-
+  // render nested children recursively
+  function renderChildren(children?: NavCollection[]) {
+    if (!children || children.length === 0) return null;
     return (
-      <li className="border-b">
-        <button
-          onClick={() => setIsMobileOpen(!isMobileOpen)}
-          className="flex items-center justify-between w-full p-3 text-sm font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition"
-          aria-expanded={isMobileOpen}
-        >
-          <span>{link.title}</span>
-          <span className="text-xl leading-none text-gray-400 transition-transform duration-200">{isMobileOpen ? '–' : '+'}</span>
-        </button>
+      <ul className="mt-2 space-y-1">
+        {children.map((ch) => (
+          <li key={ch.id} className="text-sm">
+            <Link
+              href={`/search/${ch.handle}`}
+              className="block px-2 py-1 hover:bg-teal-50 rounded text-gray-700"
+              onClick={(e) => {
+                /* nothing else required — Link handles navigation */
+              }}
+            >
+              {ch.title}
+            </Link>
 
-        {isMobileOpen && (
-          <ul className="bg-gray-50 py-1">
-            {link.subLinks?.map((subLink) => (
-              <li key={subLink.path}>
-                <a
-                  href={subLink.path}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick(subLink.path);
-                  }}
-                  className="block px-6 py-2 text-sm text-gray-600 hover:bg-teal-100 hover:text-teal-700 transition"
-                >
-                  {subLink.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </li>
+            {/* recursively render deeper levels */}
+            <div className="pl-4">{renderChildren(ch.children)}</div>
+          </li>
+        ))}
+      </ul>
     );
-  };
+  }
 
-  // --- Desktop Hover Submenu (controlled by openKey) ---
-  const DesktopSubmenuItem = ({ link }: { link: MenuLink }) => {
-    const key = link.title.toLowerCase();
-    const isOpen = openKey === key;
+  // Renders the mega-panel for a given top-menu entry
+  function MegaPanel({ keyName }: { keyName?: string }) {
+    // get filtered collections and build root-level groups (parents)
+    const filtered = collectionsForKey(keyName, collections);
+    if (!filtered.length) return null;
+    const tree = buildTree(filtered);
+
+    // split top-level groups into columns (responsive)
+    const perCol = Math.ceil(tree.length / 3) || 1;
+    const cols: NavCollection[][] = [];
+    for (let i = 0; i < tree.length; i += perCol) cols.push(tree.slice(i, i + perCol));
 
     return (
-      <li
-        className="h-full flex items-center relative"
-        onMouseEnter={() => openDropdown(key)}
+      <div
+        className="overflow-y-auto absolute left-0 top-full mt-2 z-40 w-[60vw] md:w-[40vw] bg-white shadow-lg border-t-4 border-teal-600"
+        onMouseEnter={() => keyName && openDropdown(keyName)}
         onMouseLeave={() => closeDropdownWithDelay()}
       >
-        <a
-          href={link.path}
-          onClick={(e) => e.preventDefault()}
-          className="py-4 px-2 hover:text-teal-600 transition duration-150 flex items-center font-medium text-sm"
-          aria-haspopup="true"
-          aria-expanded={isOpen}
-        >
-          <span className="mr-2">{link.title}</span>
-          <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
-        </a>
-
-        <div
-          className={`absolute left-0 top-full mt-2 z-30 w-48 bg-white border border-gray-200 shadow-lg rounded-md p-2 transform transition-all duration-200 origin-top ${
-            isOpen ? 'opacity-100 visible translate-y-0 pointer-events-auto' : 'opacity-0 invisible -translate-y-1 pointer-events-none'
-          }`}
-          onMouseEnter={() => openDropdown(key)}
-          onMouseLeave={() => closeDropdownWithDelay()}
-        >
-          {/* invisible bridge */}
-          <div className="absolute -top-2 left-0 right-0 h-2" />
-          {link.subLinks?.map((subLink) => (
-            <a
-              key={subLink.path}
-              href={subLink.path}
-              onClick={(e) => {
-                e.preventDefault();
-                handleLinkClick(subLink.path);
-              }}
-              className="block px-3 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-600 rounded"
-            >
-              {subLink.title}
-            </a>
+        <div className="max-w-screen-xl mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          {cols.map((col, i) => (
+            <div key={i} className="space-y-4">
+              {col.map((cat) => (
+                <div key={cat.id}>
+                  <h4 className="text-sm font-semibold text-teal-700 mb-2">{cat.title}</h4>
+                  {renderChildren(cat.children)}
+                  {/* if no children, offer link to the category itself */}
+                  {!cat.children?.length && (
+                    <div className="mt-1">
+                      <Link href={`/search/${cat.handle}`} className="text-sm text-gray-700 hover:text-teal-600">
+                        View {cat.title}
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           ))}
         </div>
-      </li>
+      </div>
     );
-  };
+  }
 
-  // --- Mobile Drawer ---
+  /* Mobile drawer */
   const MobileDrawer = () => (
     <>
       {isDrawerOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsDrawerOpen(false)} />}
-
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-2xl transform transition-transform duration-300 overflow-y-auto lg:hidden ${
-          isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-80 bg-white z-50 shadow-2xl transform transition-transform duration-300 overflow-y-auto lg:hidden ${
+          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
         }`}
-        aria-hidden={!isDrawerOpen}
       >
-        <div className="flex justify-between items-center p-3 border-b bg-gray-50">
-          <div className="text-sm font-semibold">Menu</div>
-          <button onClick={() => setIsDrawerOpen(false)} className="text-gray-500 hover:text-black p-1">
-            <X className="w-6 h-6" />
+        <div className="flex justify-between items-center p-3 border-b">
+          <div className="font-semibold">Menu</div>
+          <button onClick={() => setIsDrawerOpen(false)} className="p-1">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <nav aria-label="Mobile main">
-          <ul className="py-2">
-            {menu.map((link) =>
-              link.subLinks ? (
-                <MobileSubmenuItem link={link} key={link.path} />
-              ) : (
-                <li key={link.path}>
-                  <a
-                    href={link.path}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleLinkClick(link.path);
-                    }}
-                    className="flex items-center justify-between p-3 text-sm font-medium text-gray-700 hover:bg-teal-50 hover:text-teal-600 transition"
-                  >
-                    <span>{link.title}</span>
-                    {link.hasChildren && <span className="text-xl leading-none text-gray-400">+</span>}
-                  </a>
-                </li>
-              )
-            )}
+        <nav className="p-3">
+          <ul className="space-y-2">
+            {TOP_MENU.map((m) => (
+              <li key={m.title}>
+                <button
+                  onClick={() => {
+                    if (m.path) handleLink(m.path);
+                    else setIsDrawerOpen(false);
+                  }}
+                  className="w-full text-left py-2 px-2 rounded hover:bg-teal-50"
+                >
+                  {m.title}
+                </button>
+
+                {/* show mobile expanded list for special keys */}
+                {m.key && (
+  <div className="pl-4 mt-2">
+    {(() => {
+      const filtered = collectionsForKey(m.key, collections);
+      const tree = buildTree(filtered); 
+
+      return tree.map((cat) => (
+        <details key={cat.id} className="mb-2">
+          <summary className="font-medium cursor-pointer">{cat.title}</summary>
+
+          {/* children */}
+          <ul className="pl-4 mt-2">
+            {(cat.children || []).map((ch) => (
+              <li key={ch.id}>
+                <Link
+                  href={`/search/${ch.handle}`}
+                  className="text-sm block py-1 text-gray-700 hover:text-teal-600"
+                >
+                  {ch.title}
+                </Link>
+
+                {/* recursively render deeper children */}
+                {ch.children && ch.children.length > 0 && (
+                  <ul className="pl-4 mt-1">
+                    {ch.children.map((sub) => (
+                      <li key={sub.id}>
+                        <Link
+                          href={`/search/${sub.handle}`}
+                          className="text-xs block py-1 text-gray-600 hover:text-teal-500"
+                        >
+                          {sub.title}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </details>
+      ));
+    })()}
+  </div>
+)}
+              </li>
+            ))}
           </ul>
 
-          <CategoryList collections={collections} isMobile={true} />
-
-          <div className="p-4 border-t mt-4">
-            <a href={`tel:${PHONE_NUMBER.replace(/[^0-9+]/g, '')}`} className="flex items-center text-teal-600 font-semibold text-base">
-              <Phone className="w-5 h-5 mr-3" />
-              <span className="break-keep">{PHONE_NUMBER}</span>
+          <div className="mt-6 border-t pt-4">
+            <a href={`tel:${PHONE_NUMBER.replace(/[^0-9+]/g, "")}`} className="flex items-center gap-2 text-teal-600 font-semibold">
+              <Phone className="w-4 h-4" /> {PHONE_NUMBER}
             </a>
           </div>
         </nav>
@@ -295,56 +295,61 @@ export default function FullCommerceNavbar({ collections }: { collections: Colle
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm relative z-20">
       <MobileDrawer />
-
       <div className="max-w-screen-xl mx-auto flex items-center justify-between h-16 px-4">
-        {/* Left: Mobile toggle & Categories (desktop) */}
         <div className="flex items-center gap-3">
-          <button
-            className="p-2 lg:hidden text-gray-700 hover:text-black rounded-md"
-            onClick={() => setIsDrawerOpen(true)}
-            aria-label="Open mobile menu"
-          >
+          <button className="p-2 lg:hidden text-gray-700 hover:text-black rounded-md" onClick={() => setIsDrawerOpen(true)} aria-label="Open mobile menu">
             <Menu className="w-6 h-6" />
           </button>
-
-          <div className="hidden lg:flex items-center h-full">
-            <CategoryList collections={collections} isMobile={false} openKey={openKey} onOpen={openDropdown} onClose={() => closeDropdownWithDelay()} />
-          </div>
         </div>
 
-        {/* Center: Navigation */}
+        {/* main nav */}
         <ul className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-700 tracking-wide">
-          {menu.map((link) =>
-            link.subLinks ? (
-              <DesktopSubmenuItem link={link} key={link.path} />
-            ) : (
-              <li key={link.path} className="h-full flex items-center">
-                <a
-                  href={link.path}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleLinkClick(link.path);
-                  }}
-                  className="py-3 px-2 hover:text-teal-600 transition duration-150"
-                >
-                  {link.title}
-                </a>
-              </li>
-            )
-          )}
+           {/* <CategoriesDropdown
+      collections={collections as any[]}
+      isMobile={false}
+      openKey={openKey}
+      onOpen={openDropdown}
+      onClose={() => closeDropdownWithDelay()}
+    /> */}
+          {TOP_MENU.map((m) => {
+            const key = m.key;
+            const isOpen = key ? openKey === key : false;
+            if (key) {
+              return (
+                <li key={m.title} className="relative" onMouseEnter={() => openDropdown(key)} onMouseLeave={() => closeDropdownWithDelay()}>
+                  <button
+                    onClick={() => m.path && handleLink(m.path)}
+                    className="py-3 px-2 hover:text-teal-600 transition duration-150 flex items-center gap-1"
+                    aria-expanded={isOpen}
+                  >
+                    <span>{m.title}</span>
+                    <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {isOpen && <MegaPanel keyName={key} />}
+                </li>
+              );
+            } else {
+              return (
+                <li key={m.title}>
+                  <Link href={m.path || "/"} className="py-3 px-2 hover:text-teal-600 transition duration-150">
+                    {m.title}
+                  </Link>
+                </li>
+              );
+            }
+          })}
         </ul>
 
-        {/* Right: Phone / CTA */}
+        {/* right side phone */}
         <div className="hidden sm:flex items-center">
-          <a
-            href={`tel:${PHONE_NUMBER.replace(/[^0-9+]/g, '')}`}
-            className="flex items-center gap-2 bg-teal-50 border border-teal-100 text-teal-700 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm hover:bg-teal-100 transition"
-          >
+          <a href={`tel:${PHONE_NUMBER.replace(/[^0-9+]/g, "")}`} className="flex items-center gap-2 bg-teal-50 border border-teal-100 text-teal-700 px-3 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap shadow-sm hover:bg-teal-100 transition">
             <Phone className="w-4 h-4" />
             <span className="select-none">{PHONE_NUMBER}</span>
           </a>
         </div>
       </div>
+     
     </nav>
   );
 }
