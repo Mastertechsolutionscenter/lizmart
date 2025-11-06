@@ -47,7 +47,6 @@ export async function getProductsByCollection({
     select: { id: true },
   });
 
-  // If main collection found, get all its children too
   const mainIds = mainCollections.map((c) => c.id);
   let allCollectionIds = [...mainIds];
 
@@ -59,7 +58,7 @@ export async function getProductsByCollection({
     allCollectionIds = [...mainIds, ...childCollections.map((c) => c.id)];
   }
 
-  // Fallback: If still nothing, match collections that contain term
+  // fallback
   if (allCollectionIds.length === 0) {
     const fallback = await prisma.collection.findMany({
       where: {
@@ -94,58 +93,12 @@ export async function getProductsByCollection({
     },
   };
 
- if (gender && gender !== "general") {
-  const opposite = gender === "men" ? "women" : "men";
+  
+  if (gender && gender !== "general") {
+    whereBase.gender = gender.toLowerCase();
+  }
 
-  whereBase.AND = [
-    {
-      OR: [
-        // Exact gender match
-        { gender: gender.toLowerCase() },
-
-        // Tag match
-        { tags: { has: gender.toLowerCase() } },
-
-        // Title contains gender, but not opposite
-        {
-          title: {
-            contains: gender,
-            mode: "insensitive",
-          },
-        },
-        {
-          NOT: {
-            title: {
-              contains: opposite,
-              mode: "insensitive",
-            },
-          },
-        },
-
-        // Description contains gender, but not opposite
-        {
-          description: {
-            contains: gender,
-            mode: "insensitive",
-          },
-        },
-        {
-          NOT: {
-            description: {
-              contains: opposite,
-              mode: "insensitive",
-            },
-          },
-        },
-      ],
-    },
-  ];
-}
-
-
-
-
-  // Step 5: Count + fetch
+  
   const total = await prisma.product.count({ where: whereBase });
 
   const productsRaw = await prisma.product.findMany({
