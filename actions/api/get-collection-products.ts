@@ -95,28 +95,49 @@ export async function getProductsByCollection({
   };
 
   if (gender && gender !== "general") {
-  // Main strict match
   whereBase.AND = [
     {
       OR: [
-        { gender: { equals: gender, mode: "insensitive" } },
+        // Gender strict match (case-insensitive handled via lowercase normalization)
+        { gender: gender.toLowerCase() },
+
+        // Tag match
         { tags: { has: gender.toLowerCase() } },
+
+        // Title contains gender but excludes opposite
         {
           AND: [
             { title: { contains: gender, mode: "insensitive" } },
-            { title: { not: { contains: gender === "men" ? "women" : "men", mode: "insensitive" } } },
+            {
+              title: {
+                not: {
+                  contains: gender === "men" ? "women" : "men",
+                  mode: "insensitive",
+                },
+              },
+            },
           ],
         },
+
+        // Description contains gender but excludes opposite
         {
           AND: [
             { description: { contains: gender, mode: "insensitive" } },
-            { description: { not: { contains: gender === "men" ? "women" : "men", mode: "insensitive" } } },
+            {
+              description: {
+                not: {
+                  contains: gender === "men" ? "women" : "men",
+                  mode: "insensitive",
+                },
+              },
+            },
           ],
         },
       ],
     },
   ];
 }
+
 
 
   // Step 5: Count + fetch
