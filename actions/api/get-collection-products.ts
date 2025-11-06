@@ -82,8 +82,8 @@ export async function getProductsByCollection({
 
   // Step 3: Sorting
   const orderBy: any = {};
-  if (sortKey) orderBy[sortKey] = reverse ? "asc" : "desc";
-  else orderBy["createdAt"] = reverse ? "asc" : "desc";
+if (sortKey) orderBy[sortKey] = reverse ? "desc" : "asc";
+else orderBy["createdAt"] = reverse ? "desc" : "asc";
 
   // Step 4: Build query
   const whereBase: any = {
