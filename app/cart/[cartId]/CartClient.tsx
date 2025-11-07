@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 
-import type { Cart } from "@/lib/neondb/types";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import type { Cart } from "@/lib/neondb/types";
 import Image from "next/image";
 
-import AddressForm from "./AddressForm"; 
+import AddressForm from "./AddressForm";
 
 interface CartClientProps {
   cart?: Cart;
@@ -92,7 +92,8 @@ export default function CartClient({ cart, userId }: CartClientProps) {
     }
 
     // Else, maybe redirect to a success page or add success param
-    router.push(`/cart/[cartId]?success=true`);
+    //cart/${cartId}?success=true
+    router.push(`orders`);
   } catch (err) {
     console.error("Error in handleAddressSubmit:", err);
     toast.error("Something went wrong during checkout.");

@@ -162,6 +162,7 @@ function getSnapshotTitle(snapshot: any): string | null {
 /* ---------- actions ---------- */
 
 export async function getOrdersByUser(userId?: string): Promise<OrderLite[]> {
+  console.log(userId);
   const orders = await prisma.order.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
