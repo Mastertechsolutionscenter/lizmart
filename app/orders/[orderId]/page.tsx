@@ -91,7 +91,7 @@ export default async function OrderDetailsPage({ params }: PageProps){
             <Clock size={16} color={COLORS.textMuted} />
             <div>
               <div style={{ fontWeight: 600, color: COLORS.textDark }}>Order from</div>
-              <div style={{ color: COLORS.textMuted }}>{firstItem?.productTitle ?? "—"}</div>
+              <div style={{ color: COLORS.textMuted }}>LizMart Naturals</div>
             </div>
           </div>
 
