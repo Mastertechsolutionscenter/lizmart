@@ -3,6 +3,65 @@
 
 import prisma from "@/lib/prisma";
 
+const DUMMY_ORDER_ITEM: OrderItemLite = {
+  id: "dummy-item-1",
+  productTitle: "Herbal Hair Oil",
+  variantTitle: "250ml",
+  sku: "DUMMY-SKU",
+  quantity: 1,
+  unitPriceAmount: 1200,
+  lineTotalAmount: 1200,
+  image: "/1.webp",
+};
+
+const DUMMY_ORDER: OrderLite = {
+  id: "dummy-order-1",
+  orderNumber: "DUMMY-001",
+  status: "Pending",
+  paymentStatus: "Unpaid",
+  totalAmount: 1200,
+  totalQuantity: 1,
+  createdAt: new Date().toISOString(),
+  placedAt: null,
+  shippingAddress: {
+    id: "dummy-address-1",
+    fullName: "Jane Doe",
+    phone: "+254700000000",
+    county: "Nairobi",
+    town: "Westlands",
+  },
+  items: [DUMMY_ORDER_ITEM],
+};
+
+const DUMMY_ORDER_DETAIL: OrderDetail = {
+  ...DUMMY_ORDER,
+  notes: null,
+  metadata: null,
+  payments: [
+    {
+      id: "dummy-pay-1",
+      provider: "Mpesa",
+      providerPaymentId: "MPESA-DUMMY",
+      method: "Mpesa",
+      amount: 1200,
+      currency: "KES",
+      status: "Pending",
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  shipments: [
+    {
+      id: "dummy-ship-1",
+      carrier: "Easy Coach",
+      trackingNumber: "EC-DUMMY-TRACK",
+      status: "Not Shipped",
+      shippedAt: null,
+      deliveredAt: null,
+    },
+  ],
+};
+
+
 /* ---------- types (unchanged) ---------- */
 export type OrderItemLite = {
   id: string;
@@ -115,6 +174,11 @@ export async function getOrdersByUser(userId?: string): Promise<OrderLite[]> {
       shippingAddress: true,
     },
   });
+
+
+ if (!orders || orders.length === 0) {
+    return [DUMMY_ORDER];
+  }
 
   return orders.map((o) => {
     const items: OrderItemLite[] =
@@ -278,5 +342,10 @@ export async function getOrderById(orderId: string, userId?: string): Promise<Or
     shipments,
   };
 
-  return detail;
+  if (!order) return DUMMY_ORDER_DETAIL;
+  if (userId && order.userId && order.userId !== userId) return DUMMY_ORDER_DETAIL;
+
+  // ... existing mapping logic (unchanged)
+  // at the end:
+  return detail ?? DUMMY_ORDER_DETAIL;
 }
