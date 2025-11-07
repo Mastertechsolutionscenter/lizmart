@@ -33,7 +33,7 @@ export default async function OrderDetailsPage({
 
   if (!order) return notFound();
 
-  // pick sensible fallbacks
+  
   const items = order.items ?? [];
   const firstItem = items[0] ?? null;
 
