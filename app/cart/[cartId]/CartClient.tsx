@@ -9,13 +9,14 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-import AddressForm from "./AddressForm";   // adjust path if needed
+import AddressForm from "./AddressForm"; 
 
 interface CartClientProps {
   cart?: Cart;
+  userId?: string | null;
 }
 
-export default function CartClient({ cart }: CartClientProps) {
+export default function CartClient({ cart, userId }: CartClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -71,7 +72,10 @@ export default function CartClient({ cart }: CartClientProps) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+  ...data,
+  userId, 
+}),
     });
 
     const json = await response.json();
@@ -154,15 +158,30 @@ export default function CartClient({ cart }: CartClientProps) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" onClick={() => setShowAddressForm(true)}>
-                Enter Address & Pay
-              </Button>
-            </CardFooter>
+  <Button
+    className="w-full"
+    onClick={() => {
+      if (!userId) {
+        
+        toast.error("Please log in to continue checkout.");
+        router.push("/dashboard/login");
+        return;
+      }
+      setShowAddressForm(true);
+    }}
+  >
+    Enter Address & Pay
+  </Button>
+</CardFooter>
           </Card>
-        ) : (
-          // Show the address form which includes Pay Now
-          <AddressForm cart={cart} onSubmit={handleAddressSubmit} />
-        )}
+        ) : userId ? (
+  <AddressForm cart={cart} onSubmit={handleAddressSubmit} />
+) : (
+  <div className="text-center space-y-4">
+    <p className="text-lg">Please log in to proceed with checkout. This helps us Keep your information safe and provide seamless user Experience.</p>
+    <Button onClick={() => router.push("/dashboard/login")}>Login</Button>
+  </div>
+)}
       </div>
     </div>
   );
