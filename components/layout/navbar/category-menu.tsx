@@ -271,6 +271,7 @@ export default function FullCommerceNavbar({ collections }: { collections: NavCo
                         </Link>
                       </li>
                     ))}
+                    <ProfileDropdown />
                   </ul>
                 )}
               </li>
