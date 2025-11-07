@@ -21,16 +21,16 @@ function numberToFixedSafe(n?: number | null, digits = 2) {
   return Number(n).toFixed(digits);
 }
 
-export default async function OrderDetailsPage({
-  params,
-}: {
-  params: { orderId: string };
-}) {
-  const { orderId } = params;
+interface PageProps {
+  params: Promise<{ orderId: string }>;
+}
+
+export default async function OrderDetailsPage({ params }: PageProps){
+  const { orderId } = await params;
 
   // fetch using your server action
   const order = await getOrderById(orderId);
-
+ //
   if (!order) return notFound();
 
   
