@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import CategoriesDropdown from "./categories-dropdown";
+import ProfileDropdown from "@/components/ProfileDropdown";
+
 
 type NavCollection = {
   id: string;
@@ -38,7 +40,8 @@ const TOP_MENU: TopMenuItem[] = [
   { title: "SPORTS", path: "/search/sports?gender=sports", key: "sports" },
   { title: "SKIN CARE", path: "/search/skin-care?gender=skin", key: "skin" },
   { title: "CONTACT", path: "/contact-us" },
-  { title: "ABOUT US", path: "/about-us"}
+  { title: "ABOUT US", path: "/about-us"},
+  { title: "MY PROFILE", key: "profile" }
 ];
 
 /* ---------- helpers ---------- */
@@ -314,6 +317,7 @@ export default function FullCommerceNavbar({ collections }: { collections: NavCo
           {TOP_MENU.map((m) => {
             const key = m.key;
             const isOpen = key ? openKey === key : false;
+            
             if (key) {
               return (
                 <li key={m.title} className="relative" onMouseEnter={() => openDropdown(key)} onMouseLeave={() => closeDropdownWithDelay()}>
@@ -339,6 +343,7 @@ export default function FullCommerceNavbar({ collections }: { collections: NavCo
               );
             }
           })}
+          <ProfileDropdown />
         </ul>
 
         {/* right side phone */}
