@@ -36,7 +36,8 @@ interface AddressFormProps {
     };
   };
   onSubmit: (data: AddressFormValues) => void;
- 
+  
+}
 
 export default function AddressForm({ cart, onSubmit }: AddressFormProps) {
   const [subCounties, setSubCounties] = useState<{ id: string; name: string }[]>([]);
@@ -54,7 +55,7 @@ export default function AddressForm({ cart, onSubmit }: AddressFormProps) {
       mpesaNumber: "",
     },
   });
-  
+  //
 
   const selectedCounty = form.watch("county");
 
