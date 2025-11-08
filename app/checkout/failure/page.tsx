@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from "@/components/layout/footer";
 import { XCircle, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -49,6 +50,7 @@ export default function CheckoutFailurePage() {
           
         </div>
       </div>
+    
     </div>
   );
 }

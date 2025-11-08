@@ -1,5 +1,6 @@
 "use client";
 
+import Footer from "@/components/layout/footer";
 import { CheckCircle2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -53,6 +54,7 @@ export default function CheckoutSuccessPage() {
           
         </div>
       </div>
+   
     </div>
   );
 }
