@@ -7,6 +7,7 @@ const BRAND_GREEN = "text-[#2e7d32]";
 
 export default function TermsAndConditionsPage() {
   return (
+     <div className="w-screen">
     <div className="container mx-auto max-w-4xl py-12 px-4 md:px-8">
       <header className="text-center mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900">
@@ -91,9 +92,9 @@ export default function TermsAndConditionsPage() {
           Last Updated: November 8, 2025.
         </p>
       </footer>
-       <div className="w-screen">
-  <Footer />
-      </div>
+       
+    </div>
+    <Footer />
     </div>
   );
 }

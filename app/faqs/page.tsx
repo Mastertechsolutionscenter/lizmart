@@ -53,6 +53,7 @@ const faqsData = [
 
 export default function FAQPage() {
   return (
+    <div className="w-screen">
     <div className="container mx-auto max-w-4xl py-12 px-4 md:px-8">
       <header className="text-center mb-10">
         <h1 className="text-4xl font-extrabold text-gray-900">
@@ -93,9 +94,9 @@ export default function FAQPage() {
           or email us at info@lizmartNaturals.com.
         </p>
       </footer>
-      <div className="w-screen">
-  <Footer />
-      </div>
+     
+    </div>
+    <Footer />
     </div>
   );
 }
