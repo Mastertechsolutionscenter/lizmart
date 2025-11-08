@@ -1,4 +1,8 @@
+// app/checkout/layout.tsx
+
 import Footer from '@/components/layout/footer';
+import { Suspense } from 'react'; 
+import CheckoutLoading from './loading'; 
 
 export default function CheckoutLayout({
   children,
@@ -8,8 +12,10 @@ export default function CheckoutLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">
-        
-        {children}
+    
+        <Suspense fallback={<CheckoutLoading />}>
+          {children}
+        </Suspense>
       </main>
       
       <Footer />
