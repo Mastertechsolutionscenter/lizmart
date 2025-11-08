@@ -4,12 +4,12 @@ import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": process.env.FRONTEND_STORE_URL ?? "https://neocommerce.vercel.app",
+  "Access-Control-Allow-Origin": process.env.FRONTEND_STORE_URL ?? "https://lizmart.vercel.app",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-// Optional Safaricom IP whitelist (keep or remove)
+
 const allowedIPs = [
   "196.201.214.200","196.201.214.206","196.201.213.114","196.201.214.207",
   "196.201.214.208","196.201.213.44","196.201.212.127","196.201.212.138",
@@ -21,10 +21,12 @@ export async function OPTIONS(req: Request) {
 }
 
 export async function POST(req: Request) {
+  console.log("entered");
   const clientIP = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "";
-
+  console.log("--entered", clientIP);
   // Optional IP check
   if (allowedIPs.length > 0 && !allowedIPs.includes(clientIP)) {
+    console.log("rejected one");
     return new NextResponse(JSON.stringify({ message: "Forbidden" }), {
       status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -33,8 +35,11 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
+    console.log("body", body);
     const { Body } = body || {};
     const { stkCallback } = Body || {};
+
+    console.log("stkCallback", stkCallback);
 
     if (!stkCallback) {
       return new NextResponse("Invalid MPESA callback body", { status: 400 });
