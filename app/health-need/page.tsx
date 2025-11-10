@@ -1,6 +1,7 @@
 // app/health-need/page.tsx (Server Component)
 
 import { getAllHealthTopics, HealthTopicListItem } from "@/actions/api/get-health-topic";
+import Footer from "@/components/layout/footer";
 import { Heading } from "@/components/ui/dashboard/heading";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
@@ -32,6 +33,7 @@ export default async function HealthNeedPage() {
   const topics = await getAllHealthTopics();
 
   return (
+    <div className="w-screen">
     <div className="max-w-screen-xl mx-auto py-10 px-4 md:px-6">
       <Heading 
         title="Shop by Health Need" 
@@ -50,6 +52,8 @@ export default async function HealthNeedPage() {
           ))}
         </div>
       )}
+ </div>
+ <Footer />
     </div>
   );
 }

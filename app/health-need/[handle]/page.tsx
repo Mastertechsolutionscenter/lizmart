@@ -6,6 +6,7 @@ import { Heading } from "@/components/ui/dashboard/heading";
 import { Separator } from "@/components/ui/separator";
 import ProductGrid from "@/components/grid/related-product-grid"; 
 import { Metadata } from "next";
+import Footer from "@/components/layout/footer";
 
 interface TopicDetailPageProps {
   params: { handle: string };
@@ -59,6 +60,7 @@ export default async function TopicDetailPage(props: { params: Promise<{ handle:
   });
 
   return (
+    <div className="w-screen">
     <div className="max-w-screen-xl mx-auto py-10 px-4 md:px-6">
       {/* Topic Header */}
       <Heading 
@@ -95,6 +97,8 @@ export default async function TopicDetailPage(props: { params: Promise<{ handle:
           </div>
         )}
       </section>
+      </div>
+      <Footer />
     </div>
   );
 }

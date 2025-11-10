@@ -25,6 +25,7 @@ const footerMenus = [
     {
       title: 'Wellness & Lifestyle',
       links: [
+        { name: 'By Health Needs', href: '/health-need'},
         { name: 'Vitamins & Minerals', href: '/suppliments' },
         { name: 'Pain & Inflammation', href: '/wellness-pain-inflammation' },
         { name: 'Stress & Sleep', href: '/wellness-stress-sleep' },
