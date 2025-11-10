@@ -46,10 +46,10 @@ const { items, totalPages } = productsResult;
      
       <section className="bg-[#f0f4f8] ">
        <CollectionGrid
-  title="Sexual Health"
+  title=" Male Libido Enhancements"
   description="Explore our carefully curated sexual health products for men and women."
   items={sexualHealthItems}
-  collectionHandle="sexual-health"
+  collectionHandle="men-sexual-health"
 />
 </section>
       <ProductGrid items={items} currentPage={page} totalPages={totalPages} />
