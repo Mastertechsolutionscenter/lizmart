@@ -109,3 +109,18 @@ export async function createCartAndSetCookie() {
   let cart = await createCart();
   (await cookies()).set('cartId', cart.id!);
 }
+
+export async function clearCart() {
+  try {
+    
+    (await cookies()).delete('cartId');
+
+   
+    revalidateTag(TAGS.cart); 
+
+
+  } catch (e) {
+    console.error('Error clearing cart:', e);
+    throw new Error('Failed to clear cart.');
+  }
+}

@@ -42,8 +42,8 @@ const TOP_MENU: TopMenuItem[] = [
   { title: "BY HEALTH NEED", path: "/search/health", key: "health-topics" },
   // ---------------------------------
   { title: "UNISEX", path: "/search", key: "categories" }, // shows general
-  { title: "MEN", path: "/search/men?gender=men", key: "men" },
-  { title: "WOMEN", path: "/search/women?gender=women", key: "women" },
+  { title: "MEN", path: "/search/men", key: "men" },
+  { title: "WOMEN", path: "/search/ladies", key: "women" },
   { title: "SPORTS", path: "/search/sports?gender=sports", key: "sports" },
   { title: "SKIN CARE", path: "/search/skin-care?gender=skin", key: "skin" },
   { title: "ABOUT US", path: "/about-us" },
@@ -431,18 +431,21 @@ export default function FullCommerceNavbar({
                   onMouseEnter={() => openDropdown(key)}
                   onMouseLeave={() => closeDropdownWithDelay()}
                 >
-                  <button
-                    onClick={() => m.path && handleLink(m.path)}
-                    className="py-3 px-2 hover:text-teal-600 transition duration-150 flex items-center gap-1"
-                    aria-expanded={isOpen}
-                  >
+                  <Link
+  href={m.path || "#"} 
+  className="py-3 px-2 hover:text-teal-600 transition duration-150 flex items-center gap-1"
+  aria-expanded={isOpen} 
+  onClick={() => {      
+      setOpenKey(null); 
+  }}
+>
                     <span>{m.title}</span>
                     <ChevronDown
                       className={`w-3 h-3 text-gray-400 transition-transform duration-200 ${
                         isOpen ? "rotate-180" : ""
                       }`}
                     />
-                  </button>
+                  </Link>
 
                   {isOpen && <MegaPanel keyName={key} />}
                 </li>

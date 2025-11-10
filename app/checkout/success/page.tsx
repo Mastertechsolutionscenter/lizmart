@@ -1,9 +1,10 @@
 "use client";
 
-import Footer from "@/components/layout/footer";
+import { clearCart } from '@/components/cart/actions';
 import { CheckCircle2, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useEffect } from 'react';
 
 
 const BRAND_GREEN = "text-[#2e7d32]";
@@ -12,6 +13,21 @@ const BRAND_YELLOW = "bg-[#fbc02d]";
 export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("orderId") || "N/A";
+
+  useEffect(() => {
+    // Define an async function to call the server action
+    const handleClearCart = async () => {
+      try {
+        await clearCart();
+        // Optional: Log success or update a state if needed
+      } catch (error) {
+        console.error("Cart clearing failed on success page:", error);
+      }
+    };
+
+    // Run the cart clear function
+    handleClearCart();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 px-4">
