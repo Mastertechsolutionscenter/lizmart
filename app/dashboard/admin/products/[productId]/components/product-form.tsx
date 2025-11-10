@@ -49,12 +49,14 @@ interface ProductFormProps {
               images: Image[];
   variants: ProductVariant[];
   CollectionProduct: { collectionId: string }[];
+  healthTopics?: { id: string; title: string }[]; 
   featuredImage: Image | null;
   seo: SEO | null;
           })
         | null;
 
     collections: { id: string; title: string, gender: string }[];
+    healthTopics: { id: string; title: string }[];
 }
 
 export type VariantFormValues = {
@@ -94,7 +96,7 @@ export function ProductVariantsFormWrapper({ initialVariants }: { initialVariant
 }
 
 
-export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collections }) => {
+export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collections, healthTopics }) => {
     
     const params = useParams();
     const router = useRouter();
@@ -144,6 +146,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
         seoId: initialData.seo?.id ?? null,
         gender: initialData.gender ?? "general",
         featured: initialData.featured ?? false,
+        healthTopic: initialData?.healthTopics ?? null,
       }
     : {
         handle: "",
@@ -166,6 +169,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
         seoId: null,
         gender: "general",
         featured: false,
+        healthTopic: []
       },
 });
 
@@ -184,6 +188,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
       variants: (data.variants ?? []).map(v => ({
     ...v,
     priceAmount: v.priceAmount != null ? String(v.priceAmount) : null,
+    healthTopicIds: data.healthTopic?.map(ht => ht.id) ?? [],
   })),
     };
 
@@ -374,6 +379,63 @@ export const ProductForm: React.FC<ProductFormProps> = ({ initialData, collectio
       <FormMessage />
     </FormItem>
   )}
+/>
+
+<FormField
+  control={form.control}
+  name="healthTopic"
+  render={({ field }) => {
+   
+    const selectedTopics = field.value ?? [];
+
+    
+    const availableTopics = healthTopics; 
+
+    return (
+      <FormItem className="col-span-3">
+        <FormLabel>Health Topics</FormLabel>
+        <FormControl>
+          <Select
+            value="" // Keep empty so you can select multiple
+            onValueChange={(value) => {
+              const topic = availableTopics.find(t => t.id === value);
+              if (!topic) return;
+
+              if (selectedTopics.some((t: any) => t.id === value)) {
+                // Remove topic if already selected
+                field.onChange(
+                  selectedTopics.filter((t: any) => t.id !== value)
+                );
+              } else {
+                // Add topic if not selected
+                field.onChange([...selectedTopics, topic]);
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue>
+                {selectedTopics.length > 0
+                  ? selectedTopics.map((t: any) => t.title).join(", ")
+                  : "Select health topics"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {availableTopics.map((topic) => (
+                <SelectItem key={topic.id} value={topic.id}>
+                  {topic.title}{" "}
+                  {selectedTopics.some((t: any) => t.id === topic.id) && "✓"}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FormControl>
+        <FormDescription>
+          Assign one or more health topics to this product.
+        </FormDescription>
+        <FormMessage />
+      </FormItem>
+    );
+  }}
 />
 
 

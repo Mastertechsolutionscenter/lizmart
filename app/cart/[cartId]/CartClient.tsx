@@ -91,8 +91,7 @@ export default function CartClient({ cart, userId }: CartClientProps) {
       return;
     }
 
-    // Else, maybe redirect to a success page or add success param
-    //cart/${cartId}?success=true
+    //else, navigate to orders page
     router.push(`orders`);
   } catch (err) {
     console.error("Error in handleAddressSubmit:", err);

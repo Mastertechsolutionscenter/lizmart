@@ -60,6 +60,7 @@ model Product {
 
   gender                  String              @default("general")
   featured                Boolean  @default(false)
+  healthTopics      HealthTopicProduct[]
 
   @@index([handle])
 }
@@ -133,6 +134,49 @@ model CollectionProduct {
   @@unique([collectionId, productId])
 }
 
+// 1. New Model: HealthTopic
+
+model HealthTopic {
+  id                String    @id @default(uuid()) @unique
+
+  handle            String    @unique
+  // The main title, e.g., "Lung Support"
+  title             String
+  // The long-form blog/description written by the editor
+  description       String
+  // An optional HTML version, if you want to pre-render or store both
+  descriptionHtml   String?
+
+  seo               SEO?      @relation(fields: [seoId], references: [id])
+  seoId             String?
+  
+ 
+  relatedProducts   HealthTopicProduct[]
+
+  updatedAt         DateTime? @updatedAt
+  createdAt         DateTime  @default(now())
+
+  @@index([handle])
+}
+
+// 2. New Join Model: HealthTopicProduct
+
+model HealthTopicProduct {
+  id              String        @id @default(uuid()) @unique
+  
+
+  healthTopic     HealthTopic   @relation(fields: [healthTopicId], references: [id])
+  healthTopicId   String
+  
+  
+  product         Product       @relation(fields: [productId], references: [id])
+  productId       String
+  
+  order           Int?  
+
+  @@unique([healthTopicId, productId])
+}
+
 model SEO {
   id          String       @id @default(uuid()) @unique
   title       String?
@@ -140,6 +184,7 @@ model SEO {
   Product     Product[]
   Collection  Collection[]
   Page        Page[]
+  healthTopic HealthTopic[]
 }
 
 model Page {

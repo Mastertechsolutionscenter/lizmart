@@ -16,6 +16,11 @@ const VariantSchema = z.object({
   sku: z.string().optional().nullable(),
 });
 
+const HealthTopicSchema = z.object({
+  id: z.string().min(1, { message: "Health topic ID is required." }),
+  title: z.string().min(1, { message: "Health topic title is required." }),
+});
+
 const ImageSchema = z.object({
   url: z.string().url(),
   altText: z.string().optional().nullable(),
@@ -24,7 +29,6 @@ const ImageSchema = z.object({
 });
 
 export const createProductSchema = z.object({
-  // Product core
   handle: z.string().min(1),
   title: z.string().min(1),
   description: z.string().optional().nullable(),
@@ -59,6 +63,10 @@ export const createProductSchema = z.object({
   // optional: legacy seoId (if you ever want to pass an existing seo id)
   seoId: z.string().optional().nullable(),
   featured: z.boolean(),
+  healthTopic: z
+      .array(HealthTopicSchema)
+      .nullable()
+      .optional(),
 });
 
 

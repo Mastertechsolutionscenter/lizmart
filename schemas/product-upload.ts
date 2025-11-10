@@ -5,6 +5,11 @@ const SelectedOptionSchema = z.object({
   value: z.string(),
 });
 
+const HealthTopicSchema = z.object({
+  id: z.string().min(1, { message: "Health topic ID is required." }),
+  title: z.string().min(1, { message: "Health topic title is required." }),
+});
+
 const VariantSchema = z.object({
   title: z.string().min(1, { message: "Variant title is required." }),
   availableForSale: z.boolean().optional(),
@@ -71,6 +76,10 @@ export const formSchema = z.object({
   seoId: z.string().optional().nullable(),
   gender: z.string(),
   featured: z.boolean(),
+  healthTopic: z
+    .array(HealthTopicSchema)
+    .nullable()
+    .optional(),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;

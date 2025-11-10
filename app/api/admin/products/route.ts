@@ -52,6 +52,17 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const parsed = createProductSchema.parse(body);
+    const healthTopicIds = parsed.healthTopic && parsed.healthTopic.length > 0
+    ? parsed.healthTopic.map(ht => ht.id)
+    : undefined;
+
+    const healthTopicsConnect =
+  healthTopicIds
+    ? healthTopicIds.map(id => ({
+        healthTopicId: id
+      }))
+    : undefined;
+
 
     // Build variant rows for nested create (use Prisma.Decimal)
     const variantsData =
@@ -169,6 +180,8 @@ const created = await prisma.$transaction(async (tx) => {
       variants: variantsData ? { create: variantsData } : undefined,
       images: imagesData ? { create: imagesData } : undefined,
       CollectionProduct: collectionsConnect ? { create: collectionsConnect } : undefined,
+      healthTopics: healthTopicsConnect ? { create: healthTopicsConnect } : undefined,
+
     },
     include: {
       images: true,
@@ -191,6 +204,7 @@ const created = await prisma.$transaction(async (tx) => {
         featuredImage: true,
         seo: true,
         CollectionProduct: { include: { collection: true } },
+        healthTopics: { include: { healthTopic: true } },
       },
     });
     return updated;

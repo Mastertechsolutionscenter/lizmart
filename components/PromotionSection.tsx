@@ -49,10 +49,10 @@ const promos: Promo[] = [
   },
   {
     id: 2,
-    title: "Sexual Health",
+    title: "Male Enhancement Products",
     subtitle: "Performance & Wellness",
     badge: "Boost Intimacy",
-    link: "/search/general-sexual-health",
+    link: "/search/men-sexual-health",
     bg: "linear-gradient(135deg,#FFFBEB 0%, #FEF3C7 100%)",
     imageSrc: "/2.webp",
     imageAlt: "Stack of blue bottles",

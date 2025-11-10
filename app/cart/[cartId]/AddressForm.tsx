@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { Loader2 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import {
@@ -42,6 +44,7 @@ interface AddressFormProps {
 export default function AddressForm({ cart, onSubmit }: AddressFormProps) {
   const [subCounties, setSubCounties] = useState<{ id: string; name: string }[]>([]);
   const [loadingCounties, setLoadingCounties] = useState<boolean>(false);
+  
 
   const counties = countiesList();
   const form = useForm<AddressFormValues>({
@@ -210,9 +213,20 @@ export default function AddressForm({ cart, onSubmit }: AddressFormProps) {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full">
-                Pay Now
-              </Button>
+          <Button
+    type="submit"
+    className="w-full"
+    disabled={form.formState.isSubmitting}
+  >
+    {form.formState.isSubmitting ? (
+      <>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Processing...
+      </>
+    ) : (
+      "Pay Now"
+    )}
+  </Button>
             </CardFooter>
           </Card>
         </div>

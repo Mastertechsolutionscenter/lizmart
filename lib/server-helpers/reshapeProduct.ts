@@ -13,7 +13,7 @@ export type ProductDTO = {
   descriptionHtml?: string | null;
   availableForSale: boolean;
   tags: string[];
-  price?: number;
+  price: number;
   currencyCode?: string;
   images: { id: string; src: string; alt?: string }[];
   featuredImage?: { id: string; src: string; alt?: string } | null;
@@ -118,7 +118,7 @@ export function reshapeProduct(
     descriptionHtml: p.descriptionHtml ?? null,
     availableForSale: Boolean(p.availableForSale),
     tags: p.tags ?? [],
-    price,
+    price: price ?? 0,
     currencyCode: currency ?? "USD",
     images,
     featuredImage,

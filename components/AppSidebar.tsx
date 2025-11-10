@@ -5,7 +5,8 @@ import {
   ReceiptText,
   Shirt,
   ShoppingBasket,
-  User
+  User,
+  ClipboardPlus
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -92,7 +93,15 @@ const AppSidebar = () => {
                           See all Collections
                         </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>             
+              </SidebarMenuItem> 
+               <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/dashboard/admin/health-topics">
+                          <ClipboardPlus />
+                          See all Health-topics
+                        </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>               
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

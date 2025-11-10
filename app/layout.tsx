@@ -1,4 +1,5 @@
 import { getCollections } from "@/actions/api/get-collections";
+import { getHealthTopics } from "@/actions/api/get-health-topics";
 import FullCommerceNavbar from "@/components/layout/navbar/category-menu";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { getCart, getMenu } from '@/lib/neondb';
@@ -35,7 +36,12 @@ export default async function RootLayout({
   
   const cart = getCart();
   const menu = await getMenu("next-js-frontend-header-menu");
-  const collections = await getCollections();
+  const [collections, healthTopics] = await Promise.all([
+    getCollections(),
+    getHealthTopics(), 
+  ]);
+
+  
 
 
   return (
@@ -48,7 +54,7 @@ export default async function RootLayout({
             </Suspense>
           <main>
             <SessionProvider>
-            <FullCommerceNavbar collections={collections} />
+            <FullCommerceNavbar collections={collections} healthTopics={healthTopics} />
             </SessionProvider>
             <div  className="my-6 w-full h-2"/>
             {children}
