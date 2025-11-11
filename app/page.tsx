@@ -30,7 +30,7 @@ export default async function HomePage({
 
 const [productsResult, sexualHealthItems, supplimentItems, featuredProducts] = await Promise.all([
   getProducts({ page, perPage }),
-  getProductsByCollection({ collectionHandle: "sexual-health", limit: 8 }),
+  getProductsByCollection({ collectionHandle: "male-enhancement", limit: 8 }),
   getProductsByCollection({ collectionHandle: "supplements", limit: 8 }),
   getFeaturedProducts(8),
 ]);
