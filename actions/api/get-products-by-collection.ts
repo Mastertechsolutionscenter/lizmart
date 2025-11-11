@@ -37,15 +37,15 @@ export async function getProductsByCollection({
 
   // 1) Find all collections whose handle/title match the requested handle (flexible)
   const collections = await prisma.collection.findMany({
-    where: {
-      OR: [
-        { handle: normalized }, // exact match (if handle passed normalized)
-        { handle: { contains: normalized } }, // matches men-sexual-health, ladies-sexual-health, etc.
-        { title: { contains: normalized, mode: "insensitive" } }, // in case title is "Sexual Health"
-      ],
-    },
-    select: { id: true },
-  });
+  where: {
+    OR: [
+      { handle: normalized },
+      { title: { equals: normalized, mode: "insensitive" } },
+    ],
+  },
+  select: { id: true },
+});
+
 
   if (!collections || collections.length === 0) {
     // no matching collections -> nothing to return
