@@ -1,4 +1,4 @@
-import ProductGrid from '@/components/grid/product-grid';
+import ProductGrid from '@/components/grid/search-product-grid';
 import { getProducts } from "@/actions/api/products";
 import Grid from 'components/grid';
 import { defaultSort, sorting } from 'lib/constants';

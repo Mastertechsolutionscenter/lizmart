@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { getProductsByCollection } from "@/actions/api/get-collection-products";
-import ProductGrid from "@/components/grid/product-grid";
+import ProductGrid from "@/components/grid/collection-product-grid";
 import { defaultSort, sorting } from "lib/constants";
 import { Metadata } from "next";
 
@@ -64,7 +64,7 @@ export default async function CategoryPage(props: {
       {items.length === 0 ? (
         <p className="py-3 text-lg">No products found in this collection</p>
       ) : (
-        <ProductGrid items={items} currentPage={page} totalPages={totalPages} />
+        <ProductGrid items={items} currentPage={page} totalPages={totalPages} collection={collection} />
       )}
     </section>
   );
