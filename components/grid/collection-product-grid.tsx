@@ -46,7 +46,7 @@ export default function ProductGrid({
   // Assume `collectionSlug` is passed via `searchParams.collection`
   const collectionSlug = searchParams.collection ?? "";
 
-  return `/collection/${encodeURIComponent(collectionSlug)}?${params.toString()}`;
+  return `/search/${encodeURIComponent(collectionSlug)}?${params.toString()}`;
 };
 
 
