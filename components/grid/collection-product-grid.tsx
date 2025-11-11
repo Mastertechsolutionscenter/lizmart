@@ -33,16 +33,22 @@ export default function ProductGrid({
 }) {
 
   const buildHref = (pageNum: number) => {
-    const params = new URLSearchParams();
+  const params = new URLSearchParams();
 
-    Object.entries(searchParams).forEach(([key, value]) => {
-      if (value !== undefined && key !== "page") params.set(key, value);
-    });
+  Object.entries(searchParams).forEach(([key, value]) => {
+    if (value !== undefined && key !== "page" && key !== "collection") {
+      params.set(key, value);
+    }
+  });
 
-    params.set("page", String(pageNum));
+  params.set("page", String(pageNum));
 
-    return `/collection/${searchParams.collection ?? ""}?${params.toString()}`;
-  };
+  // Assume `collectionSlug` is passed via `searchParams.collection`
+  const collectionSlug = searchParams.collection ?? "";
+
+  return `/collection/${encodeURIComponent(collectionSlug)}?${params.toString()}`;
+};
+
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8 mt-16 md:mt-24 mb-24">
