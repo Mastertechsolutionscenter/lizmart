@@ -63,6 +63,7 @@ export const createProductSchema = z.object({
   // optional: legacy seoId (if you ever want to pass an existing seo id)
   seoId: z.string().optional().nullable(),
   featured: z.boolean(),
+  gender: z.string(),
   healthTopic: z
       .array(HealthTopicSchema)
       .nullable()
