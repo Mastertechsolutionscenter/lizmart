@@ -74,6 +74,7 @@ const availableTags = [
   "Softgels",
   "Liquids",
   "Syrups",
+  "Sachet",
   "Powders",
   "Granules",
   "Chewables",
