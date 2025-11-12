@@ -8,8 +8,12 @@ export default function Search() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  console.log("search activated");
+
   function handleSearch(e: FormEvent<HTMLFormElement>) {
+    console.log("search fired before");
     e.preventDefault();
+    console.log("search fired after default");
     const formData = new FormData(e.currentTarget);
     const q = formData.get('q')?.toString().trim();
     if (!q) return;
