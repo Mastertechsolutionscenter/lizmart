@@ -104,7 +104,7 @@ export const columns: ColumnDef<User>[] = [
 
     const handleToggleRole = async () => {
       try {
-        const res = await fetch(`/api/users/${user.id}`, {
+        const res = await fetch(`/api/admin/users/${user.id}`, {
           method: "PATCH",
         });
         const data = await res.json();
