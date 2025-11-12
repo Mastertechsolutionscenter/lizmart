@@ -186,7 +186,7 @@ export default function CartClient({ cart, userId }: CartClientProps) {
                 </span>
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flx flex-col gap-4">
   <Button
     className="w-full"
     onClick={() => {
