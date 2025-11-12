@@ -101,8 +101,12 @@ export async function PATCH(
     const imagesPayload = Array.isArray(p.images) ? p.images : null;
     const variantsPayload = Array.isArray(p.variants) ? p.variants : null;
     const collectionsPayload = Array.isArray(p.collectionIds) ? p.collectionIds : null;
-
-    const healthTopicIdsPayload = Array.isArray(p.healthTopicIds) ? p.healthTopicIds : null;
+    
+    const healthTopicPayload = p.healthTopic;
+    const healthTopicIds =
+      Array.isArray(healthTopicPayload)
+        ? healthTopicPayload.map((ht: any) => ht.id).filter(Boolean)
+        : null;
 
     const clientProvidedFeaturedImageId = Object.prototype.hasOwnProperty.call(p, "featuredImageId");
 
@@ -123,7 +127,7 @@ export async function PATCH(
     }
 
     // If no relational changes -- do a simple scalar update and return
-    if (!imagesPayload && !variantsPayload && !collectionsPayload && !healthTopicIdsPayload) {
+    if (!imagesPayload && !variantsPayload && !collectionsPayload && !healthTopicIds) {
       const updated = await prisma.product.update({
         where: { id: productId },
         data: dataScalars,
@@ -223,12 +227,12 @@ export async function PATCH(
       }
     }
 
-    if (healthTopicIdsPayload !== null) {
+    if (healthTopicIds !== null) {
       // Delete old joins
       await prisma.healthTopicProduct.deleteMany({ where: { productId } }); 
 
-      if (healthTopicIdsPayload.length > 0) {
-        const createJoins = healthTopicIdsPayload.map((healthTopicId: string) => ({
+      if (healthTopicIds.length > 0) {
+        const createJoins = healthTopicIds.map((healthTopicId: string) => ({
           healthTopicId,
           productId,
         }));
