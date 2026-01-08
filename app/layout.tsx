@@ -1,6 +1,6 @@
 import { getCollections } from "@/actions/api/get-collections";
 import { getHealthTopics } from "@/actions/api/get-health-topics";
-import { getServerSession } from "next-auth";
+import { auth } from "@/auth";
 import FullCommerceNavbar from "@/components/layout/navbar/category-menu";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { getCart, getMenu } from '@/lib/neondb';
@@ -43,7 +43,7 @@ export default async function RootLayout({
     getCollections(),
     getHealthTopics(), 
   ]);
-  const session = await getServerSession();
+  const session = await auth();
   
 
 
