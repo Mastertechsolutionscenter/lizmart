@@ -79,7 +79,7 @@ const MapPlaceholder = () => (
 export default function ContactUsPage() {
     // Master Tech Solutions Center Contact Details
     const CONTACT = {
-        phone: '011 750 5979',
+        phone: '+254 703 919 844',
         email: 'info@lizmartNaturals.com',
         addressLine1: 'Kenya cinema plaza',
         addressLine2: 'Nairobi, Kenya',

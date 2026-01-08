@@ -64,7 +64,7 @@ const contactDetails: FocusItem[] = [
     {
         icon: Phone,
         title: 'Order & Inquiries',
-        description: 'WhatsApp/Call: 011 750 5979 . We are managed by a team of experts.',
+        description: 'WhatsApp/Call: +254 703 919 844 . We are managed by a team of experts.',
     },
 ];
 
@@ -86,7 +86,7 @@ export default function AboutUsPage() {
             An Experienced, Dynamic, and Vibrant Distributor of Health & Wellness Supplements/Cosmetics, now serving Africa and Europe.
           </p>
           <p className="mt-2 text-xl font-bold text-amber-400">
-            Call/WhatsApp: 011 750 5979
+            Call/WhatsApp: +254 703 919 844
           </p>
         </div>
       </header>

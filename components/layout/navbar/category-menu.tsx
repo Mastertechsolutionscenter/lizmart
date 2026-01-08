@@ -31,7 +31,7 @@ type TopMenuItem = {
   filterFn?: (c: NavCollection) => boolean; // optional override
 };
 
-const PHONE_NUMBER = "011 750 5979";
+const PHONE_NUMBER = "+254 703 919 844";
 
 /**
  * Edit/add top-level menu items here.

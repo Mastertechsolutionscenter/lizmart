@@ -90,7 +90,7 @@ export default function FAQPage() {
       <footer className="mt-12 p-6 bg-green-50 rounded-lg border border-green-200 text-center">
         <p className="text-base text-gray-700">
           Can't find your answer? Call/WhatsApp us directly at 
-          <span className="font-bold text-[#2e7d32]"> 011 750 5979 </span> 
+          <span className="font-bold text-[#2e7d32]"> +254 703 919 844 </span> 
           or email us at info@lizmartNaturals.com.
         </p>
       </footer>

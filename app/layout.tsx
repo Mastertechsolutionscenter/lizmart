@@ -10,6 +10,8 @@ import { GeistSans } from 'geist/font/sans';
 import { baseUrl } from 'lib/utils';
 import { SessionProvider } from 'next-auth/react';
 import { ReactNode, Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 import { Toaster } from 'sonner';
 import './globals.css';
@@ -63,6 +65,8 @@ export default async function RootLayout({
           </main>
         </CartProvider>
         </ThemeProvider>
+        <SpeedInsights />
+        <Analytics/>
       </body>
     </html>
   );

@@ -101,7 +101,7 @@ export default function ShippingReturnsPage() {
           <div className="flex items-start space-x-3">
             <Scale className={`w-5 h-5 flex-shrink-0 ${BRAND_GREEN}`} />
             <p className="text-sm text-gray-600">
-              Please contact our support team immediately at <b> 011 750 5979 </b> (Call/WhatsApp) or <a href="mailto:info@lizmartNaturals.com" className="text-[#2e7d32] hover:underline">info@lizmartNaturals.com</a>. Provide your order number and clear photographs of the product packaging. Refunds are processed after successful inspection of the returned goods.
+              Please contact our support team immediately at <b> +254 703 919 844 </b> (Call/WhatsApp) or <a href="mailto:info@lizmartNaturals.com" className="text-[#2e7d32] hover:underline">info@lizmartNaturals.com</a>. Provide your order number and clear photographs of the product packaging. Refunds are processed after successful inspection of the returned goods.
             </p>
           </div>
         </section>
