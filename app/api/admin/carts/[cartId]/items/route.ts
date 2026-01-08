@@ -4,8 +4,6 @@ import { Decimal } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export const runtime = 'nodejs';
-
 export async function POST(req: Request, context: { params: Promise<{ cartId: string }> }) {
   try {
     const body = await req.json();

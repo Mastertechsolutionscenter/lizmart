@@ -3,8 +3,6 @@ import { updateCollectionSchema } from "@/schemas/collection";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-export const runtime = 'nodejs';
-
 // Fixed route handler signatures to use the exact shape Next.js expects:
 // export async function HANDLER(req: Request, { params }: { params: { collectionId: string } })
 

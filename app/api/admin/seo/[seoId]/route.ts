@@ -4,8 +4,6 @@ import { updateSeoSchema } from "@/schemas/seo";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export const runtime = 'nodejs';
-
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ seoId: string }>}

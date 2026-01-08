@@ -1,127 +1,51 @@
-
+// app/api/collections/[collectionId]/products/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { addCartItemSchema } from '@/schemas/cart';
 import { z } from 'zod';
-import { Decimal } from '@prisma/client/runtime/library';
 
-export async function POST(
+export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ cartId: string }> }
+  context: { params: Promise<{ collectionId: string }> }
 ) {
   try {
-    const body = await req.json();
-    const parsed = addCartItemSchema.parse(body);
-    const { cartId } = await context.params; // Now awaiting the Promise
+    const { collectionId } = await context.params;
+    if (!collectionId) {
+      return NextResponse.json({ error: "Missing collectionId" }, { status: 400 });
+    }
 
-    // Start transaction for atomicity
-    const result = await prisma.$transaction(async (tx) => {
-      const cart = await tx.cart.findUnique({ where: { id: cartId } });
-      if (!cart) {
-        throw { status: 404, message: 'Cart not found' };
-      }
+    const url = new URL(req.url);
+    const page = Math.max(Number(url.searchParams.get("page") ?? 1), 1);
+    const limit = Math.min(Number(url.searchParams.get("limit") ?? 20), 100);
 
-      const variant = await tx.productVariant.findUnique({
-        where: { id: parsed.variantId },
-        include: { product: true },
-      });
-      if (!variant) {
-        throw { status: 404, message: 'Variant not found' };
-      }
+    const [total, products] = await Promise.all([
+      prisma.product.count({
+        where: { CollectionProduct: { some: { collectionId: collectionId } } }
+      }),
+      prisma.product.findMany({
+        where: { CollectionProduct: { some: { collectionId: collectionId } } },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: { createdAt: 'desc' }
+      })
+    ]);
 
-      const price = new Decimal(variant.priceAmount.toString());
-      const quantityToAdd = parsed.quantity;
-
-      const existingItem = await tx.cartItem.findFirst({
-        where: { cartId, variantId: parsed.variantId },
-      });
-
-      let line;
-      if (existingItem) {
-        const newQty = existingItem.quantity + quantityToAdd;
-        const newTotal = price.mul(newQty);
-        line = await tx.cartItem.update({
-          where: { id: existingItem.id },
-          data: {
-            quantity: newQty,
-            totalAmount: newTotal.toString(),
-            currency: variant.priceCurrency,
-            merchandiseSnapshot: {
-              title: JSON.stringify({
-                productId: variant.productId,
-                productTitle: variant.product?.title ?? null,
-                variantId: variant.id,
-                variantTitle: variant.title,
-                selectedOptions: variant.selectedOptions ?? null,
-                sku: variant.sku ?? null,
-              }),
-            },
-          },
-        });
-      } else {
-        const totalAmount = price.mul(parsed.quantity);
-        line = await tx.cartItem.create({
-          data: {
-            cartId,
-            variantId: variant.id,
-            quantity: parsed.quantity,
-            totalAmount: totalAmount.toString(),
-            currency: variant.priceCurrency,
-            merchandiseSnapshot: {
-              title: JSON.stringify({
-                productId: variant.productId,
-                productTitle: variant.product?.title ?? null,
-                variantId: variant.id,
-                variantTitle: variant.title,
-                selectedOptions: variant.selectedOptions ?? null,
-                sku: variant.sku ?? null,
-              }),
-            } as any, // if you need to force type
-          },
-        });
-      }
-
-      const lines = await tx.cartItem.findMany({ where: { cartId } });
-      const subtotal = lines.reduce(
-        (acc, l) => acc.add(new Decimal(l.totalAmount.toString())),
-        new Decimal(0)
-      );
-      const totalQuantity = lines.reduce((sum, l) => sum + l.quantity, 0);
-
-      await tx.cart.update({
-        where: { id: cartId },
-        data: {
-          subtotalAmount: subtotal.toString(),
-          subtotalCurrency: line.currency,
-          totalAmount: subtotal.toString(),
-          totalCurrency: line.currency,
-          totalQuantity,
-        },
-      });
-
-      const updatedCart = await tx.cart.findUnique({
-        where: { id: cartId },
-        include: { lines: { include: { variant: true } } },
-      });
-
-      return { line, cart: updatedCart };
-    });
-
-    return NextResponse.json(result, { status: 201 });
+    return NextResponse.json(
+      {
+        data: products,
+        pagination: {
+          total,
+          page,
+          limit,
+          pages: Math.ceil(total / limit)
+        }
+      },
+      { status: 200 }
+    );
   } catch (err) {
-    if (err instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Validation failed', issues: err.format() },
-        { status: 400 }
-      );
-    }
-    console.error('POST /api/carts/[cartId]/items', err);
-    if ((err as any)?.status) {
-      return NextResponse.json(
-        { error: (err as any).message },
-        { status: (err as any).status }
-      );
-    }
-    return NextResponse.json({ error: 'Failed to add item to cart' }, { status: 500 });
+    console.error('GET /api/collections/[collectionId]/products', err);
+    return NextResponse.json(
+      { error: 'Failed to fetch collection products' },
+      { status: 500 }
+    );
   }
 }

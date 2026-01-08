@@ -2,8 +2,6 @@ import prisma from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/library.js"; // used for safe sums
 import { NextResponse } from "next/server";
 
-export const runtime = 'nodejs';
-
 export async function GET(req: Request, { params }: { params: Promise<{ cartId: string }> }) {
   try {
     const { cartId } = await params;

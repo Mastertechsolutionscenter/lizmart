@@ -3,8 +3,6 @@ import { updatePageSchema } from "@/schemas/page";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export const runtime = 'nodejs';
-
 // Handlers use the Next.js App Router expected signature: (req: Request, { params }: { params: Promise<{ pageId: string }> })
 
 export async function GET(

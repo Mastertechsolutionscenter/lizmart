@@ -5,8 +5,6 @@ import { createProductSchema } from "@/schemas/product-api";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export const runtime = 'nodejs';
-
 export async function GET(req: Request) {
   // pagination & filters
   const url = new URL(req.url);
