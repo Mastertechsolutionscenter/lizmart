@@ -22,7 +22,7 @@ export async function addItem(
 
   try {
     await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
-    revalidateTag(TAGS.cart, 'default');
+    revalidateTag(TAGS.cart);
   } catch (e) {
     return 'Error adding item to cart';
   }
@@ -42,7 +42,7 @@ export async function removeItem(prevState: any, merchandiseId: string) {
 
     if (lineItem && lineItem.id) {
       await removeFromCart([lineItem.id]);
-      revalidateTag(TAGS.cart, 'default');
+      revalidateTag(TAGS.cart);
     } else {
       return 'Item not found in cart';
     }
@@ -84,11 +84,10 @@ export async function updateItemQuantity(
         ]);
       }
     } else if (quantity > 0) {
-      // If the item doesn't exist in the cart and quantity > 0, add it
       await addToCart([{ merchandiseId, quantity }]);
     }
 
-    revalidateTag(TAGS.cart, 'default');
+    revalidateTag(TAGS.cart);
   } catch (e) {
     console.error(e);
     return 'Error updating item quantity';
@@ -97,11 +96,11 @@ export async function updateItemQuantity(
 
 export async function redirectToCheckout() {
   let cart = await getCart();
-    if (!cart?.id) {
+
+  if (!cart?.id) {
     throw new Error('No active cart found');
   }
 
-  // ✅ Redirect to a proper route
   redirect(`/cart/${cart.id}`);
 }
 
@@ -112,13 +111,9 @@ export async function createCartAndSetCookie() {
 
 export async function clearCart() {
   try {
-    
     (await cookies()).delete('cartId');
 
-   
-    revalidateTag(TAGS.cart, 'default'); 
-
-
+    revalidateTag(TAGS.cart);
   } catch (e) {
     console.error('Error clearing cart:', e);
     throw new Error('Failed to clear cart.');
