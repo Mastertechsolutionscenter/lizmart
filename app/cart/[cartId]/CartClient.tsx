@@ -50,7 +50,7 @@ export default function CartClient({ cart, userId }: CartClientProps) {
     );
   }
 
-  const WHATSAPP_PHONE_NUMBER = "254117505979";
+  const WHATSAPP_PHONE_NUMBER = "0703 919 844";
   // **NEW: Function to handle WhatsApp order**
   const handleWhatsappOrder = () => {
     if (!cart) return;
