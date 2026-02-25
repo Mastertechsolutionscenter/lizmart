@@ -23,7 +23,7 @@ export default function CartClient({ cart, userId }: CartClientProps) {
   const [showAddressForm, setShowAddressForm] = useState(false);
 
   const WHATSAPP_PHONE_NUMBER =
-    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "254703919844";
+    /*process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||*/ "254703919844";
 
   const removeAll = async () => {};
 
