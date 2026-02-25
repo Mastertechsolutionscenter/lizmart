@@ -79,7 +79,7 @@ ${orderItems}
 
     const encodedMessage = encodeURIComponent(rawMessage);
 
-    const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/"254703919844"?text=${encodedMessage}`;
 
     window.open(whatsappUrl, "_blank");
   };
