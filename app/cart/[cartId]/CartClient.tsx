@@ -23,7 +23,7 @@ export default function CartClient({ cart, userId }: CartClientProps) {
   const [showAddressForm, setShowAddressForm] = useState(false);
 
   const WHATSAPP_PHONE_NUMBER =
-    /*process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ||*/ "254703919844";
+    .env.local.NEXT_PUBLIC_WHATSAPP_NUMBER || "254703919844";
 
   const removeAll = async () => {};
 
@@ -79,7 +79,7 @@ ${orderItems}
 
     const encodedMessage = encodeURIComponent(rawMessage);
 
-    const whatsappUrl = `https://wa.me/"254703919844"?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/{WHATSAPP_PHONE_NUMBER}?text=${encodedMessage}`;
 
     window.open(whatsappUrl, "_blank");
   };
